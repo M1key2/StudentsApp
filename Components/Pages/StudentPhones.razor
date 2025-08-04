@@ -1,0 +1,53 @@
+﻿
+
+<div class="form-section">
+    <h3 class="section-title"><i class="fas fa-phone"></i> Teléfonos</h3>
+
+    @if (Phones == null || !Phones.Any())
+    {
+        <p>No hay teléfonos.</p>
+    }
+    else
+    {
+        @foreach (var phone in Phones)
+        {
+            <div class="form-inline mb-2">
+                <InputText class="form-input me-2"
+                           placeholder="Ej. +52"
+                           @bind-Value="phone.AreaCode" />
+                <ValidationMessage For="@(() => phone.AreaCode)" class="validation-errors" />
+
+                <InputText class="form-input me-2"
+                           placeholder="Número"
+                           @bind-Value="phone.Phone_Number" />
+                <ValidationMessage For="@(() => phone.Phone_Number)" class="validation-errors" />
+
+                <button class="btn btn-danger btn-sm" type="button" @onclick="@(() => RemovePhone(phone))">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        }
+    }
+
+    <button class="btn btn-outline-primary btn-sm" type="button" @onclick="AddPhone">
+        <i class="fas fa-plus"></i> Agregar Teléfono
+    </button>
+</div>
+
+@code {
+    [Parameter] public ICollection<Phone>? Phones { get; set; }
+    [Parameter] public EventCallback<ICollection<Phone>> OnPhonesChanged { get; set; }
+
+    private void AddPhone()
+    {
+        if (Phones == null) Phones = new List<Phone>();
+        Phones.Add(new Phone());
+        OnPhonesChanged.InvokeAsync(Phones);
+    }
+
+    private void RemovePhone(Phone phone)
+    {
+        Phones?.Remove(phone);
+        OnPhonesChanged.InvokeAsync(Phones);
+    }
+}

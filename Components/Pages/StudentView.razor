@@ -1,0 +1,80 @@
+﻿
+
+@if (Visible && Student != null)
+{
+    <div class="modal show">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Detalles del Estudiante</h2>
+                <button class="close-btn" @onclick="() => OnClose.InvokeAsync()">&times;</button>
+            </div>
+            <div class="form-sections">
+                <div class="form-section">
+                    <h3 class="section-title"><i class="fas fa-user"></i> Datos Generales</h3>
+                    <p><strong>Nombre:</strong> @StudentHelper.GetFullName(Student)</p>
+                    <p><strong>Género:</strong> @(Student.StudentGender == Student.Gender.M ? "M" : "F")</p>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title"><i class="fas fa-phone"></i> Teléfonos</h3>
+                    @if (Student.Phones == null || !Student.Phones.Any())
+                    {
+                        <p>No hay teléfonos.</p>
+                    }
+                    else
+                    {
+                        <ul>
+                            @foreach (var phone in Student.Phones)
+                            {
+                                <li>@($"({phone.AreaCode}) {phone.Phone_Number}")</li>
+                            }
+                        </ul>
+                    }
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title"><i class="fas fa-envelope"></i> Emails</h3>
+                    @if (Student.Emails == null || !Student.Emails.Any())
+                    {
+                        <p>No hay emails.</p>
+                    }
+                    else
+                    {
+                        <ul>
+                            @foreach (var email in Student.Emails)
+                            {
+                                <li>@($"{email.Mail} ({email.EmailType})")</li>
+                            }
+                        </ul>
+                    }
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title"><i class="fas fa-map-marker-alt"></i> Direcciones</h3>
+                    @if (Student.Addresses == null || !Student.Addresses.Any())
+                    {
+                        <p>No hay direcciones.</p>
+                    }
+                    else
+                    {
+                        <ul>
+                            @foreach (var addr in Student.Addresses)
+                            {
+                                <li>@($"{addr.Address_Line}, {addr.City}, {addr.State}, {addr.Zip_Postcode}")</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" @onclick="() => OnClose.InvokeAsync()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public Student? Student { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+}

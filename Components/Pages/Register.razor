@@ -1,0 +1,85 @@
+﻿@page "/register"
+@layout LoginLayout
+@inject AuthApiService AuthApiService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<EditForm Model="registerReq" OnValidSubmit="DoRegister">
+    <FluentValidationValidator />
+
+    <div class="login-card">
+        <h3 class="text-center mb-4">Registro</h3>
+
+        <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="fas fa-user"></i></span>
+            <InputText @bind-Value="registerReq.Username" class="form-control" placeholder="Usuario" />
+        </div>
+        <ValidationMessage For="@(() => registerReq.Username)" class="text-danger small mb-2" />
+
+        <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+            <InputText @bind-Value="registerReq.Email" type="email" class="form-control" placeholder="Correo electrónico" />
+        </div>
+        <ValidationMessage For="@(() => registerReq.Email)" class="text-danger small mb-2" />
+
+        <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            <InputText @bind-Value="registerReq.Password" type="password" class="form-control" placeholder="Contraseña" />
+        </div>
+        <ValidationMessage For="@(() => registerReq.Password)" class="text-danger small mb-2" />
+
+        <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            <InputText @bind-Value="registerReq.ConfirmPassword" type="password" class="form-control" placeholder="Confirmar contraseña" />
+        </div>
+        <ValidationMessage For="@(() => registerReq.ConfirmPassword)" class="text-danger small mb-2" />
+
+
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <p class="text-danger small mb-3">@message</p>
+        }
+
+        <button class="btn btn-success w-100 mb-3" type="submit" disabled="@isLoading">
+            @(isLoading ? "Cargando..." : "Registrarse")
+        </button>
+
+        <p class="text-center mt-3 small">
+            ¿Ya tienes cuenta? <a href="/">Inicia sesión</a>
+        </p>
+    </div>
+</EditForm>
+
+@code {
+    private RegisterRequest registerReq = new();
+    private string message = "";
+    private bool isLoading = false;
+
+    private async Task DoRegister()
+    {
+        message = "";
+        isLoading = true;
+
+        if (registerReq.Password != registerReq.ConfirmPassword)
+        {
+            message = "Las contraseñas no coinciden";
+            isLoading = false;
+            return;
+        }
+
+        bool success = await AuthApiService.Register(registerReq);
+
+        if (success)
+        {
+            await JS.InvokeVoidAsync("toastr.success", "Registro correcto, inicia sesión");
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            message = "Error al registrarse";
+        }
+
+        isLoading = false;
+    }
+
+}

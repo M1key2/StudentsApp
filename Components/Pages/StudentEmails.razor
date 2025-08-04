@@ -1,0 +1,54 @@
+﻿
+
+<div class="form-section">
+    <h3 class="section-title"><i class="fas fa-envelope"></i> Emails</h3>
+
+    @if (Emails == null || !Emails.Any())
+    {
+        <p>No hay emails.</p>
+    }
+    else
+    {
+        @foreach (var email in Emails)
+        {
+            <div class="form-inline mb-2">
+                <InputText class="form-input me-2" placeholder="Email" @bind-Value="email.Mail" />
+                <ValidationMessage For="@(() => email.Mail)" class="validation-errors" />
+
+                <InputSelect class="form-input me-2" @bind-Value="email.EmailType">
+                    @foreach (Email.Email_Type et in Enum.GetValues(typeof(Email.Email_Type)))
+                    {
+                        <option value="@et">@et.ToString()</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => email.EmailType)" class="validation-errors" />
+
+                <button class="btn btn-danger btn-sm" type="button" @onclick="() => RemoveEmail(email)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        }
+    }
+
+    <button class="btn btn-outline-primary btn-sm" type="button" @onclick="AddEmail">
+        <i class="fas fa-plus"></i> Agregar Email
+    </button>
+</div>
+
+@code {
+    [Parameter] public ICollection<Email>? Emails { get; set; }
+    [Parameter] public EventCallback<ICollection<Email>> OnEmailsChanged { get; set; }
+
+    private void AddEmail()
+    {
+        if (Emails == null) Emails = new List<Email>();
+        Emails.Add(new Email());
+        OnEmailsChanged.InvokeAsync(Emails);
+    }
+
+    private void RemoveEmail(Email email)
+    {
+        Emails?.Remove(email);
+        OnEmailsChanged.InvokeAsync(Emails);
+    }
+}

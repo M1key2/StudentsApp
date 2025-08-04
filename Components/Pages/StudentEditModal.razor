@@ -1,0 +1,53 @@
+﻿@if (Visible)
+{
+    <div class="modal show">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>@(IsEditing ? "Editar Estudiante" : "Nuevo Estudiante")</h2>
+                <button class="close-btn" @onclick="() => OnCancel.InvokeAsync()">&times;</button>
+            </div>
+
+            <EditForm Model="Student" OnValidSubmit="Save">
+                <FluentValidationValidator />
+                <ValidationSummary class="validation-summary" />
+
+                <div class="form-sections">
+                    <StudentGeneralData Student="Student" />
+                    <StudentPhones Phones="Student.Phones" OnPhonesChanged="OnPhonesChanged"/>
+                    <StudentEmails Emails="Student.Emails" OnEmailsChanged="OnEmailsChanged" />
+                    <StudentAddresses Addresses="Student.Addresses" OnAddressesChanged="OnAddressesChanged" />
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" type="button" @onclick="() => OnCancel.InvokeAsync()">Cancelar</button>
+                    <button class="btn btn-primary" type="submit" disabled="@isSaving">
+                        @(isSaving ? "Guardando..." : "Guardar")
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+    [Parameter] public Student Student { get; set; } = new();
+    [Parameter] public bool IsEditing { get; set; }
+    [Parameter] public EventCallback<Student> OnSave { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private bool isSaving = false;
+
+    private void OnPhonesChanged(ICollection<Phone> newPhones) => Student.Phones = newPhones;
+    private void OnEmailsChanged(ICollection<Email> newEmails) => Student.Emails = newEmails;
+    private void OnAddressesChanged(ICollection<Address> newAddresses) => Student.Addresses = newAddresses;
+
+    private async Task Save()
+    {
+        isSaving = true;
+        await OnSave.InvokeAsync(Student);
+        isSaving = false;
+    }
+}

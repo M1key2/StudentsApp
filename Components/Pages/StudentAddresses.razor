@@ -1,0 +1,63 @@
+﻿
+
+<div class="form-section">
+    <h3 class="section-title"><i class="fas fa-map-marker-alt"></i> Direcciones</h3>
+
+    @if (Addresses == null || !Addresses.Any())
+    {
+        <p>No hay direcciones.</p>
+    }
+    else
+    {
+        @foreach (var addr in Addresses)
+        {
+            <div class="form-inline mb-2">
+                <InputText class="form-input me-2"
+                           placeholder="Dirección"
+                           @bind-Value="addr.Address_Line" />
+                <ValidationMessage For="@(() => addr.Address_Line)" class="validation-errors" />
+
+                <InputText class="form-input me-2"
+                           placeholder="Ciudad"
+                           @bind-Value="addr.City" />
+                <ValidationMessage For="@(() => addr.City)" class="validation-errors" />
+
+                <InputText class="form-input me-2"
+                           placeholder="Estado"
+                           @bind-Value="addr.State" />
+                <ValidationMessage For="@(() => addr.State)" class="validation-errors" />
+
+                <InputText class="form-input me-2"
+                           placeholder="Código Postal"
+                           @bind-Value="addr.Zip_Postcode" />
+                <ValidationMessage For="@(() => addr.Zip_Postcode)" class="validation-errors" />
+
+                <button class="btn btn-danger btn-sm" type="button" @onclick="@(() => RemoveAddress(addr))">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        }
+    }
+
+    <button class="btn btn-outline-primary btn-sm" type="button" @onclick="AddAddress">
+        <i class="fas fa-plus"></i> Agregar Dirección
+    </button>
+</div>
+
+@code {
+    [Parameter] public ICollection<Address>? Addresses { get; set; }
+    [Parameter] public EventCallback<ICollection<Address>> OnAddressesChanged { get; set; }
+
+    private void AddAddress()
+    {
+        if (Addresses == null) Addresses = new List<Address>();
+        Addresses.Add(new Address());
+        OnAddressesChanged.InvokeAsync(Addresses);
+    }
+
+    private void RemoveAddress(Address addr)
+    {
+        Addresses?.Remove(addr);
+        OnAddressesChanged.InvokeAsync(Addresses);
+    }
+}

@@ -1,0 +1,69 @@
+﻿@page "/"
+@layout LoginLayout
+@inject AuthApiService AuthApiService
+@inject NavigationManager NavigationManager
+
+<div class="login-card">
+    <h3 class="text-center mb-4">Iniciar Sesión</h3>
+
+    <div class="mb-3 input-group">
+        <span class="input-group-text"><i class="fas fa-user"></i></span>
+        <InputText @bind-Value="username" class="form-control" placeholder="Usuario" />
+    </div>
+
+    <div class="mb-3 input-group">
+        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+        <InputText @bind-Value="password" type="password" class="form-control" placeholder="Contraseña" />
+    </div>
+
+    <button class="btn btn-primary w-100 mb-3" @onclick="DoLogin" disabled="@isLoading">
+        @(isLoading ? "Cargando..." : "Entrar")
+    </button>
+    <p class="text-center small">
+        ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
+    </p>
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <p class="text-center text-danger mt-3">@message</p>
+    }
+</div>
+
+@code {
+    private string username = "";
+    private string password = "";
+    private string message = "";
+    private bool isLoading = false;
+
+    private async Task DoLogin()
+    {
+        message = "";
+
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        {
+            message = "Por favor, complete usuario y contraseña";
+            return;
+        }
+
+        isLoading = true;
+
+        var loginRequest = new LoginRequest
+            {
+                Username = username,
+                Password = password
+            };
+
+        bool success = await AuthApiService.Login(loginRequest);
+
+        if (success)
+        {
+            NavigationManager.NavigateTo("/students");
+        }
+        else
+        {
+            message = "Usuario o contraseña incorrectos";
+        }
+
+        isLoading = false;
+    }
+
+}

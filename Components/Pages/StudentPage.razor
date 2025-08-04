@@ -1,0 +1,224 @@
+﻿@page "/students"
+@inject StudentApiService StudentApiService
+@inject IJSRuntime JS
+@inject AuthApiService AuthApiService
+@layout MainLayout
+
+<div class="container">
+    <div class="header">
+        <h1>Estudiantes</h1>
+    </div>
+
+    <div class="main-panel">
+        <div class="controls">
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input class="search-input" placeholder="Buscar estudiante..."
+                @oninput="OnSearchChanged" />
+            </div>
+            <button class="btn btn-primary" @onclick="OpenAddModal">
+                <i class="fas fa-plus"></i> Nuevo Estudiante
+            </button>
+        </div>
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <div class="toast align-items-center text-bg-success border-0"
+            role="alert" aria-live="assertive" aria-atomic="true" @ref="toastElement">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        @toastMessage
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="students-grid">
+            @if (isLoading)
+            {
+                <p class="text-white">Cargando...</p>
+            }
+            else if (!filteredStudents.Any())
+            {
+                <p class="text-white">No hay estudiantes registrados</p>
+            }
+            else
+            {
+                @foreach (var s in filteredStudents)
+                {
+                    <StudentCard Student="s"
+                    OnEdit="OpenEditModal"
+                    OnView="ViewStudent"
+                    OnDelete="DeleteStudent" />
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@if (showModal)
+{
+    <StudentEditModal @bind-Visible="showModal"
+    Student="currentStudent"
+    IsEditing="isEditing"
+    OnSave="SaveStudent"
+    OnCancel="CloseModal" />
+}
+
+@if (showViewModal && selectedStudent != null)
+{
+    <StudentView Student="selectedStudent"
+    Visible="showViewModal"
+    OnClose="CloseViewModal" />
+}
+
+@code {
+    private List<Student> students = new();
+    private List<Student> filteredStudents = new();
+    private Student currentStudent = new();
+    private Student? selectedStudent;
+    private ElementReference toastElement;
+    private string toastMessage = string.Empty;
+    private string searchTerm = string.Empty;
+    private bool showModal = false;
+    private bool isEditing = false;
+    private bool isLoading = false;
+    private bool showViewModal = false;
+    private bool isSaving = false;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await AuthApiService.InitializeAsync();
+
+            if (AuthApiService.IsAuthenticated)
+            {
+                await LoadStudents();
+                StateHasChanged();
+            }
+        }
+    }
+    private async Task LoadStudents()
+    {
+         isLoading = true;
+       
+         students = await StudentApiService.GetStudents();
+         ApplyFilter();
+
+         isLoading = false;
+    }
+
+    private void OnSearchChanged(ChangeEventArgs e)
+    {
+        searchTerm = e.Value?.ToString() ?? string.Empty;
+        ApplyFilter();
+    }
+
+    private void OpenAddModal()
+    {
+        searchTerm = string.Empty;
+        currentStudent = CreateEmptyStudent();
+        isEditing = false;
+        showModal = true;
+    }
+
+
+    private void OpenEditModal(Student s)
+    {
+        currentStudent = JsonSerializer.Deserialize<Student>(JsonSerializer.Serialize(s)) ?? new Student();
+        isEditing = true;
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+        currentStudent = new Student();
+        isEditing = false;
+        StateHasChanged();
+    }
+
+    private void ViewStudent(Student s)
+    {
+        selectedStudent = s;
+        showViewModal = true;
+    }
+
+    private void CloseViewModal()
+    {
+        showViewModal = false;
+        selectedStudent = null;
+    }
+
+    private async Task SaveStudent(Student student)
+    {
+        isSaving = true;
+
+        if (isEditing)
+            await UpdateStudentAsync(student);
+        else
+            await CreateStudentAsync(student);
+
+        await LoadStudents();
+        CloseModal();
+
+        isSaving = false;
+    }
+
+    private async Task CreateStudentAsync(Student student)
+    {
+        var result = await StudentApiService.CreateStudent(student);
+        await ShowSuccess("Estudiante guardado correctamente");
+    }
+
+    private async Task UpdateStudentAsync(Student student)
+    {
+        await StudentApiService.UpdateStudent(student);
+        await ShowSuccess("Estudiante actualizado correctamente");
+    }
+
+    private async Task DeleteStudent(int id)
+    {
+            var confirmed = await JS.InvokeAsync<bool>("showDeleteConfirm", "Esta acción no se puede deshacer");
+
+            if (confirmed)
+            {
+            await StudentApiService.DeleteStudent(id);
+                students.RemoveAll(s => s.Id == id);
+                ApplyFilter();
+
+            await ShowSuccess("Estudiante eliminado correctamente");
+            }
+    }
+    private async Task ShowSuccess(string message)
+    {
+        await JS.InvokeVoidAsync("toastr.success", message);
+    }
+
+    private void ApplyFilter()
+    {
+        filteredStudents = string.IsNullOrWhiteSpace(searchTerm)
+            ? students
+            : students.Where(s =>
+                StudentHelper.GetFullName(s).Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                s.Emails.Any(e => e.Mail.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                s.Addresses.Any(a => a.City.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            ).ToList();
+    }
+    private Student CreateEmptyStudent()
+    {
+        return new Student
+            {
+                First_Name = string.Empty,
+                Last_Name = string.Empty,
+                Emails = new List<Email>(),
+                Phones = new List<Phone>(),
+                Addresses = new List<Address>(),
+                StudentGender = Student.Gender.M
+            };
+    }
+
+}

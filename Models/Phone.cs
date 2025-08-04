@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using StudentsApp.Models;
 using System.Text.Json.Serialization;
 
 namespace StudentsApp.Models
@@ -13,13 +12,13 @@ namespace StudentsApp.Models
         [ForeignKey("Student")]
         public int StudentId { get; set; }
 
-        [Required(ErrorMessage = "Phone number is required.")]
-        [StringLength(15, ErrorMessage = "Phone number cannot exceed 15 digits.")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "Phone number must contain only digits.")]
+        [Required(ErrorMessage = "El número de teléfono es obligatorio.")]
+        [StringLength(15, ErrorMessage = "El número de teléfono no puede exceder los 15 dígitos.")]
+        [RegularExpression(@"^\d+$", ErrorMessage = "El número de teléfono solo debe contener dígitos.")]
         public string? Phone_Number { get; set; }
 
-        [Required(ErrorMessage = "Area code is required.")]
-        [StringLength(5, ErrorMessage = "Area code cannot exceed 5 characters.")]
+        [Required(ErrorMessage = "El código de área es obligatorio.")]
+        [StringLength(5, ErrorMessage = "El código de área no puede exceder los 5 caracteres.")]
         public string? AreaCode { get; set; }
 
         public enum PhoneType

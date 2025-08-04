@@ -7,15 +7,15 @@ namespace StudentsApp.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Last name is required.")]
-        [StringLength(50, ErrorMessage = "Last name cannot exceed 50 characters.")]
+        [Required(ErrorMessage = "El apellido es obligatorio.")]
+        [StringLength(50, ErrorMessage = "El apellido no puede exceder los 50 caracteres.")]
         public string? Last_Name { get; set; }
 
-        [StringLength(50, ErrorMessage = "Middle name cannot exceed 50 characters.")]
+        [StringLength(50, ErrorMessage = "El segundo nombre no puede exceder los 50 caracteres.")]
         public string? Middle_Name { get; set; }
 
-        [Required(ErrorMessage = "First name is required.")]
-        [StringLength(50, ErrorMessage = "First name cannot exceed 50 characters.")]
+        [Required(ErrorMessage = "El nombre es obligatorio.")]
+        [StringLength(50, ErrorMessage = "El nombre no puede exceder los 50 caracteres.")]
         public string? First_Name { get; set; }
 
         public enum Gender
@@ -27,7 +27,6 @@ namespace StudentsApp.Models
         public virtual ICollection<Phone> Phones { get; set; } = new List<Phone>();
         public virtual ICollection<Email> Emails { get; set; } = new List<Email>();
         public virtual ICollection<Address> Addresses { get; set; } = new List<Address>();
-
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.Now;

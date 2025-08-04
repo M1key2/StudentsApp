@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using static StudentsApp.Models.Email;
 namespace StudentsApp.Models
 {
     public class Email
@@ -9,9 +8,9 @@ namespace StudentsApp.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Email address is required.")]
-        [EmailAddress(ErrorMessage = "Invalid email address format.")]
-        [StringLength(100, ErrorMessage = "Email address cannot exceed 100 characters.")]
+        [Required(ErrorMessage = "El correo electrónico es obligatorio.")]
+        [EmailAddress(ErrorMessage = "Formato de correo electrónico no válido.")]
+        [StringLength(100, ErrorMessage = "El correo electrónico no puede exceder los 100 caracteres.")]
         public string? Mail { get; set; }
 
         [ForeignKey("Student")]

@@ -184,21 +184,26 @@ body::before {
 
 /* Grid estudiantes */
 .students-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 25px;
-  margin-bottom: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+    align-items: stretch;
 }
 
 .student-card {
-  background: rgba(255,255,255,0.95);
-  border-radius: 20px;
-  padding: 25px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-  border: 1px solid rgba(255,255,255,0.3);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 .student-card::before {
   content: '';
@@ -213,26 +218,28 @@ body::before {
 }
 
 .student-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    align-items: flex-start;
 }
 
 .student-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-  margin-right: 15px;
-  box-shadow: 0 4px 15px rgba(102,126,234,0.3);
-  animation: pulseGlow 2.5s infinite;
-  transition: transform 0.3s ease;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 15px;
+    box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+    animation: pulseGlow 2.5s infinite;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
 }
 .student-avatar:hover {
   transform: scale(1.1) rotate(5deg);

@@ -63,7 +63,7 @@ namespace StudentsApp.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Addresses", (string)null);
                 });
 
             modelBuilder.Entity("StudentsApp.Models.Email", b =>
@@ -95,7 +95,7 @@ namespace StudentsApp.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Emails");
+                    b.ToTable("Emails", (string)null);
                 });
 
             modelBuilder.Entity("StudentsApp.Models.Phone", b =>
@@ -129,7 +129,7 @@ namespace StudentsApp.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Phones");
+                    b.ToTable("Phones", (string)null);
                 });
 
             modelBuilder.Entity("StudentsApp.Models.Student", b =>
@@ -165,7 +165,7 @@ namespace StudentsApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("StudentsApp.Models.User", b =>
@@ -199,7 +199,7 @@ namespace StudentsApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("StudentsApp.Models.Address", b =>
